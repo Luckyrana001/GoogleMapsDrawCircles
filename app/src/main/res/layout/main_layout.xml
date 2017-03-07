@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:text="Show Polyline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="showPolyline"
+        android:id="@+id/button2" />
+
+    <Button
+        android:text="Show Circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="showCircle"
+        android:id="@+id/button3" />
+</LinearLayout>

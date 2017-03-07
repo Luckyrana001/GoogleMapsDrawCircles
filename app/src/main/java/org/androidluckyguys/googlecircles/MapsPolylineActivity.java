@@ -1,6 +1,5 @@
 package org.androidluckyguys.googlecircles;
 
-import android.*;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,14 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -30,16 +29,22 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
-public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyCallback {
+/**
+ * Created by lucky on 07/03/2017.
+ */
+
+public class MapsPolylineActivity extends FragmentActivity implements OnMapReadyCallback {
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     public static final String LOCATION_PERMISSION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     public static final String LOCATION_PREF = "locationPref";
-
-    Context context;
+    private ArrayList<LatLng> points;
+    private Context context;
     Activity activity;
     Button checkPermissionStatus;
     private GoogleMap googleMap;
@@ -48,9 +53,6 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
     private Circle mCircle;
     private Marker mMarker;
 
-    //test inside
-     double mLatitude = 3.183736;
-            double mLongitude = 101.686679;
 
     //test outside
    /* double mLatitude = 3.182180;
@@ -60,10 +62,15 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps_circles);
+        setContentView(R.layout.polyline_layout);
 
-        context = MapsCirclesActivity.this;
-        activity = MapsCirclesActivity.this;
+        context = MapsPolylineActivity.this;
+        activity = MapsPolylineActivity.this;
+
+
+        createPointsLatLngList();
+
+
 
         if (Build.VERSION.SDK_INT >= 23) {
             checkLocationPermission(activity, context, LOCATION_PERMISSION, LOCATION_PREF);
@@ -73,34 +80,65 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
         }
 
 
+    }
 
+    private void createPointsLatLngList() {
+        points = new ArrayList<>();
+
+        LatLng latLng = null;
+        //sentul
+        latLng = new LatLng(Double.parseDouble("3.190468"),Double.parseDouble("101.689110"));
+        points.add(latLng);
+
+
+        //Keypong
+        latLng = new LatLng(Double.parseDouble("3.202809"),Double.parseDouble("101.641045"));
+        points.add(latLng);
+
+
+        //Petaling jaya
+        latLng = new LatLng(Double.parseDouble("3.126365"),Double.parseDouble("101.598473"));
+        points.add(latLng);
+
+
+        //Bandar
+        latLng = new LatLng(Double.parseDouble("3.069113"),Double.parseDouble("101.603966"));
+        points.add(latLng);
+
+
+        //Cherus
+        latLng = new LatLng(Double.parseDouble("3.102710"),Double.parseDouble("101.729279"));
+        points.add(latLng);
+
+
+        //sentul
+        latLng = new LatLng(Double.parseDouble("3.190468"),Double.parseDouble("101.689110"));
+        points.add(latLng);
+    }
+
+    private void drawPolygon( ) {
+
+
+
+
+        googleMap.addPolygon(new PolygonOptions()
+                .addAll(points)
+                .strokeColor(Color.CYAN)
+                .strokeWidth(15)
+                .fillColor(Color.CYAN)
+        );
 
     }
 
     private void showMaps() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.boundaryMap);
         mapFragment.getMapAsync(this);
     }
 
 
-    private void drawMarkerWithCircle(LatLng position) {
-        double radiusInMeters = 200.0;  // increase decrease this distancce as per your requirements
-        int strokeColor = 0xffff0000; //red outline
-        int shadeColor = 0x44ff0000; //opaque red fill
 
-        CircleOptions circleOptions = new CircleOptions()
-                .center(position)
-                .radius(radiusInMeters)
-                .fillColor(shadeColor)
-                .strokeColor(strokeColor)
-                .strokeWidth(8);
-        mCircle = googleMap.addCircle(circleOptions);
-
-        MarkerOptions markerOptions = new MarkerOptions().position(position);
-        mMarker = googleMap.addMarker(markerOptions);
-    }
 
 
     @Override
@@ -108,13 +146,12 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
         googleMap = map;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        LatLng sydney = new LatLng(3.122004, 101.687737);
+        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Kuala-lumpur"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-
-
-
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(11).build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         // Changing map type
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -149,52 +186,27 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
         // Bundle extra = getIntent().getBundleExtra("extra");
         //ArrayList<Escolas> objects = (ArrayList<Escolas>) extra.getSerializable("array");
 
+        drawPolygon();
 
-        try {
+        googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
 
+                LatLng currentLoc = new LatLng(location.getLatitude(),location.getLongitude());
+                boolean status =    isPointInPolygon(currentLoc,points);
 
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLatitude, mLongitude), 16));
-
-            MarkerOptions options = new MarkerOptions();
-
-            // Setting the position of the marker
-
-            options.position(new LatLng(mLatitude, mLongitude));
-
-            //googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-
-            LatLng latLng = new LatLng(mLatitude, mLongitude);
-            drawMarkerWithCircle(latLng);
-
-
-            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location location) {
-                    float[] distance = new float[2];
-
-                        /*
-                        Location.distanceBetween( mMarker.getPosition().latitude, mMarker.getPosition().longitude,
-                                mCircle.getCenter().latitude, mCircle.getCenter().longitude, distance);
-                                */
-
-                    Location.distanceBetween( location.getLatitude(), location.getLongitude(),
-                            mCircle.getCenter().latitude, mCircle.getCenter().longitude, distance);
-
-                    if( distance[0] > mCircle.getRadius()  ){
-                        Toast.makeText(getBaseContext(), "You are Outside of the circle, Distance from center: " + distance[0] + " Radius: " + mCircle.getRadius(), Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getBaseContext(), "Your are Inside the circle, Distance from center: " + distance[0] + " Radius: " + mCircle.getRadius() , Toast.LENGTH_LONG).show();
-                    }
+                if(status)
+                {
+                    showToast("you are within polyline");
+                }
+                else
+                {
+                    showToast("you are outside of polyline");
 
                 }
-            });
 
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            }
+        });
     }
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -205,7 +217,38 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
 
     }
 
+    private boolean isPointInPolygon(LatLng tap, ArrayList<LatLng> vertices) {
+        int intersectCount = 0;
+        for (int j = 0; j < vertices.size() - 1; j++) {
+            if (rayCastIntersect(tap, vertices.get(j), vertices.get(j + 1))) {
+                intersectCount++;
+            }
+        }
 
+        return ((intersectCount % 2) == 1); // odd = inside, even = outside;
+    }
+
+    private boolean rayCastIntersect(LatLng tap, LatLng vertA, LatLng vertB) {
+
+        double aY = vertA.latitude;
+        double bY = vertB.latitude;
+        double aX = vertA.longitude;
+        double bX = vertB.longitude;
+        double pY = tap.latitude;
+        double pX = tap.longitude;
+
+        if ((aY > pY && bY > pY) || (aY < pY && bY < pY)
+                || (aX < pX && bX < pX)) {
+            return false; // a and b can't both be above or below pt.y, and a or
+            // b must be east of pt.x
+        }
+
+        double m = (aY - bY) / (aX - bX); // Rise over run
+        double bee = (-aX) * m + aY; // y = mx + b
+        double x = (pY - bee) / m; // algebra is neat!
+
+        return x > pX;
+    }
 
     @Override
     protected void onResume() {
@@ -219,7 +262,7 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
                     @Override
                     public void onPermissionAsk() {
 
-                        ActivityCompat.requestPermissions(MapsCirclesActivity.this,
+                        ActivityCompat.requestPermissions(MapsPolylineActivity.this,
                                 new String[]{Permission},
                                 MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
@@ -230,7 +273,7 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
 
                         showToast("Permission previously Denied.");
 
-                        ActivityCompat.requestPermissions(MapsCirclesActivity.this,
+                        ActivityCompat.requestPermissions(MapsPolylineActivity.this,
                                 new String[]{Permission},
                                 MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
@@ -289,7 +332,7 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
         alertDialog.show();
     }
 
-   
+
 
 
 
