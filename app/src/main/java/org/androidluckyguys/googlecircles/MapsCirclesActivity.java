@@ -180,7 +180,10 @@ public class MapsCirclesActivity extends FragmentActivity implements OnMapReadyC
                     Location.distanceBetween( location.getLatitude(), location.getLongitude(),
                             mCircle.getCenter().latitude, mCircle.getCenter().longitude, distance);
 
-                    if( distance[0] > mCircle.getRadius()  ){
+                    float radius =  Float.parseFloat(mCircle.getRadius()+"");
+                    float distanceInMeter = Float.parseFloat(distance[0]+"");
+                    if( distanceInMeter > radius )
+                    {
                         Toast.makeText(getBaseContext(), "You are Outside of the circle, Distance from center: " + distance[0] + " Radius: " + mCircle.getRadius(), Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getBaseContext(), "Your are Inside the circle, Distance from center: " + distance[0] + " Radius: " + mCircle.getRadius() , Toast.LENGTH_LONG).show();
